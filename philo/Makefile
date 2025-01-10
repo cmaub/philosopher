@@ -6,7 +6,7 @@
 #    By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/07 12:07:39 by cmaubert          #+#    #+#              #
-#    Updated: 2025/01/08 17:13:31 by cmaubert         ###   ########.fr        #
+#    Updated: 2025/01/09 11:32:13 by cmaubert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,9 +26,10 @@ SRC_FILES	= main.c \
 				parsing.c \
 				init.c \
 				dinner.c \
-				set_values_mutex.c \
+				handle_values_mutex.c \
 				threads_mutex.c \
-				write.c
+				write.c \
+				monitor.c
 SRCS	= $(addprefix $(SRC_PATH), $(SRC_FILES))
 
 # Header

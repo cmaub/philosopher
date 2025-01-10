@@ -6,7 +6,7 @@
 /*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 12:08:08 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/08 17:45:15 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/10 12:10:23 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,12 @@ typedef struct s_data {
 	t_fork	*forks; // tableau de fourchettes
 	t_philo	*philos; // tableau de philosophes
 	int	threads_readies;
+	t_mtx	data_mega_lock; // table mutex / pour ev
 	t_mtx	data_lock; // table mutex / pour eviter les races quand on lit dans la struct donnee
 	t_mtx	print_lock; // Mutex pour protéger les sorties sur la console
+	pthread_t	monitor;
+	pthread_t	supervisor; // to do -> check la mort et les repas des philos
+	long		threads_running_nb;
 } t_data;
 
 void	erro_exit(char *error);
@@ -106,9 +110,14 @@ void	handle_mutex(t_mtx *mutex, t_philo_code code);
 void	data_initializer(t_data *data);
 void	philo_initializer(t_data *data);
 void	dinner(t_data *data);
-long	gettime(t_time time_code);
+long	gettime(int unit);
 void	ft_usleep(long time_in_ms, t_data *data);
 void	print_status(t_philo_action action, t_philo *philo);
+
+// monitor
+void	increase_long(t_mtx *mutex, long *value);
+void	*monitor_routine(void *data);
+int	threads_running(t_mtx *mutex, long *threads_running, long philo_nbr);
 
 // set values mutex
 int	dinner_finished(t_data *data);

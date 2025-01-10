@@ -6,39 +6,11 @@
 /*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 16:34:03 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/08 17:56:48 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/10 12:05:45 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void print_data(t_data *data) {
-    printf("Number of Philosophers: %ld\n", data->philo_nbr);
-    printf("Time to Die: %ld ms\n", data->time_to_die);
-    printf("Time to Eat: %ld ms\n", data->time_to_eat);
-    printf("Time to Sleep: %ld ms\n", data->time_to_sleep);
-    printf("Number of Meals: %ld\n", data->num_meals);
-    printf("Simulation Start Time: %ld\n", data->start_time);
-    printf("Simulation Ended: %s\n", data->end ? "Yes" : "No");
-
-    // Affichage des fourchettes (si pertinent)
-    for (int i = 0; i < data->philo_nbr; i++) {
-        printf("Fork %d Address: %p\n", i, (void *)&data->forks[i]);
-    }
-
-    printf("\nPhilosophers Details:\n");
-    for (int i = 0; i < data->philo_nbr; i++) {
-        t_philo *philo = &data->philos[i];
-        printf("Philosopher ID: %d\n", philo->id);
-        printf("Thread ID: %ld\n", (long)philo->thread_id);
-        printf("Number of Meals Eaten: %ld\n", philo->nb_meals_eaten);
-        printf("Is Full: %d\n", philo->full);
-        printf("Last Meal Time: %ld\n", philo->last_meal_t);
-        printf("First Fork Address: %p\n", (void *)philo->first_fork);
-        printf("Second Fork Address: %p\n", (void *)philo->second_fork);
-        printf("\n");
-    }
-}
 
 void	erro_exit(char *error)
 {
@@ -59,43 +31,60 @@ void	*try_malloc(size_t size)
 
 // int gettimeofday(struct timeval *restrict tp, void *restrict tzp);
 
-long	gettime(t_time time_code)
+// long	gettime(t_time time_code)
+// {
+// 	struct timeval tv;
+
+// 	if (gettimeofday(&tv, NULL))
+// 		erro_exit("gettimeofday failed");
+// 	if (SECOND == time_code)
+// 		return (tv.tv_sec + (tv.tv_usec / 1e6)); // microsecondes divisees par 1000000
+// 	else if (MILLISECOND == time_code)
+// 		return ((tv.tv_sec * 1e3) + (tv.tv_usec / 1e3));
+// 	else if (MICROSECOND == time_code)
+// 		return ((tv.tv_sec * 1e6) + tv.tv_usec);
+// 	else
+// 		erro_exit("Wrong time code");
+// 	return (1);
+// }
+
+long gettime(int unit)
 {
 	struct timeval tv;
 
 	if (gettimeofday(&tv, NULL))
 		erro_exit("gettimeofday failed");
-	if (SECOND == time_code)
-		return (tv.tv_sec + (tv.tv_usec / 1e6)); // microsecondes divisees par 1000000
-	else if (MILLISECOND == time_code)
-		return ((tv.tv_sec * 1e3) + (tv.tv_usec / 1e3));
-	else if (MICROSECOND == time_code)
-		return ((tv.tv_sec * 1e6) + tv.tv_usec);
-	else
-		erro_exit("Wrong time code");
-	return (1);
+	if (unit == MILLISECOND)
+		return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	return (tv.tv_sec * 1000000) + tv.tv_usec;
 }
 
+// ./philo num_of_philo time_to_die time_to_eat time_to_sleep [num_eat]
+// ./philo 5 800 200 200 [5]
+	// 1 ms 	= milliseconde = 10puissance-3 = 1/1000 = 1000 microsecondes
+	// 1 us	= microseconde = 10puissance-6 = 1/1000000 = 0,001 milliseconde
+	// usleep = microseconde
+// sortie de gettimeofday convertie en milliseconde
 void	ft_usleep(long time_in_ms, t_data *data)
 {
 	long	start_time;
 	long	elapsed;
 	long	remaining;
 
-	start_time = gettime(MICROSECOND);
-	while (gettime(MICROSECOND) - start_time < time_in_ms)
+	start_time = gettime(MILLISECOND);
+	while (gettime(MILLISECOND) - start_time < time_in_ms)
 	{
 		if (dinner_finished(data))
 			break ;
-		elapsed = gettime(MICROSECOND) - start_time;
+		elapsed = gettime(MILLISECOND) - start_time;
 		remaining = time_in_ms - elapsed;
 		// pour optimiser alterner entre methode si temps restant est petit ou grand
-		if (remaining > 1e3)
-			usleep(remaining / 2); // Si le temps restant est supérieur à 1000 microsecondes (1 milliseconde) utiliser usleep pour mettre en pause le programme pendant la moitié du temps restant pour reduire la consommation de ressources
+		if (remaining > 1)
+			usleep(remaining * 1000 / 2); // Si le temps restant est supérieur à 1 microsecondes (1 milliseconde) utiliser usleep pour mettre en pause le programme pendant la moitié du temps restant pour reduire la consommation de ressources
 		else
 		{
 			//SPINLOCK : occuper activement le programme jusqua ce qu'une condition soit remplie
-			while (gettime(MICROSECOND) - start_time < time_in_ms)
+			while (gettime(MILLISECOND) - start_time < time_in_ms)
 				;
 		}
 	}

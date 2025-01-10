@@ -6,7 +6,7 @@
 /*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 16:40:34 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/08 11:49:24 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/09 09:49:16 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,16 +94,15 @@ static long	ft_atol(char *str)
 void	parse(t_data *data, char **av)
 {
 	data->philo_nbr = ft_atol(av[1]);
-	data->time_to_die = ft_atol(av[2]) * 1e3;
-	data->time_to_eat = ft_atol(av[3]) * 1e3;
-	data->time_to_sleep = ft_atol(av[4]) * 1e3;
-	if (data->time_to_die < 6e4
-		|| data->time_to_eat < 6e4
-			|| data->time_to_sleep < 6e4)
+	data->time_to_die = ft_atol(av[2]);
+	data->time_to_eat = ft_atol(av[3]);
+	data->time_to_sleep = ft_atol(av[4]);
+	if (data->time_to_die < 60
+		|| data->time_to_eat < 60
+			|| data->time_to_sleep < 60)
 			erro_exit("Timestamps must be major than 60ms");
 	if (av[5])
 		data->num_meals = ft_atol(av[5]);
 	else
 		data->num_meals = -1;
-	printf("data->philo_nbr = %ld\n", data->philo_nbr);
 }
