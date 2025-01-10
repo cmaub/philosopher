@@ -6,7 +6,7 @@
 /*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 17:12:59 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/09 16:30:48 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/10 16:08:37 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,13 +94,13 @@ void debug_status(t_philo_action action, t_philo *philo) {
 
 void	print_status(t_philo_action action, t_philo *philo)
 {
-	debug_status(action, philo);
-	// long	elapsed;
+	// debug_status(action, philo);
+	long	elapsed;
 
-    // handle_mutex(&philo->data->print_lock, LOCK);
-	// elapsed = gettime(MILLISECOND) - philo->data->start_time;
-	// if (philo->full || dinner_finished(philo->data))
-	// 	return ;
+    handle_mutex(&philo->data->print_lock, LOCK);
+	elapsed = gettime(MILLISECOND) - philo->data->start_time;
+	if (philo->full || dinner_finished(philo->data))
+		return ;
 
 	// if ((TAKE_FIRST_FORK == action|| TAKE_SECOND_FORK == action))
 	// {
@@ -117,5 +117,15 @@ void	print_status(t_philo_action action, t_philo *philo)
 	// 	printf("%ld ms Philosopher %d is thinking\n", elapsed, philo->id);
 	// else if (DIED == action)
 	// 	printf("%ld ms Philosopher %d is dead\n", elapsed, philo->id);
-	// handle_mutex(&philo->data->print_lock, UNLOCK);
+
+    else if (EATING == action)
+		printf("%ld %d is eating\n", elapsed, philo->id);
+	else if (SLEEPING == action)
+		printf("%ld %d is sleeping\n", elapsed, philo->id);
+	else if (THINKING == action)
+		printf("%ld %d is thinking\n", elapsed, philo->id);
+	else if (DIED == action)
+		printf("%ld %d is dead\n", elapsed, philo->id);
+
+    handle_mutex(&philo->data->print_lock, UNLOCK);
 }

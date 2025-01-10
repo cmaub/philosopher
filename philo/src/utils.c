@@ -6,11 +6,28 @@
 /*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 16:34:03 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/10 12:05:45 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/10 16:03:30 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	free_destroy_mutex(t_data *data)
+{
+	int	i;
+
+	i = -1;
+	while (++i < data->philo_nbr)
+		handle_mutex(&data->philos[i].philo_mutex, DESTROY);
+	i = -1;
+	while (++i < data->philo_nbr)
+		handle_mutex(&data->forks[i].fork, DESTROY);
+	handle_mutex(&data->data_lock, DESTROY);
+	handle_mutex(&data->print_lock, DESTROY);
+	handle_mutex(&data->data_mega_lock, DESTROY);
+	free(data->philos);
+	free(data->forks);
+}
 
 void	erro_exit(char *error)
 {
@@ -79,11 +96,14 @@ void	ft_usleep(long time_in_ms, t_data *data)
 		elapsed = gettime(MILLISECOND) - start_time;
 		remaining = time_in_ms - elapsed;
 		// pour optimiser alterner entre methode si temps restant est petit ou grand
+		// Si le temps restant est supérieur à 1 microsecondes (1 milliseconde) utiliser usleep
+		// pour mettre en pause le programme pendant la moitié du temps
+		// restant pour reduire la consommation de ressources
 		if (remaining > 1)
-			usleep(remaining * 1000 / 2); // Si le temps restant est supérieur à 1 microsecondes (1 milliseconde) utiliser usleep pour mettre en pause le programme pendant la moitié du temps restant pour reduire la consommation de ressources
+			usleep(remaining * 1000 / 2);
 		else
 		{
-			//SPINLOCK : occuper activement le programme jusqua ce qu'une condition soit remplie
+			//SPINLOCK : occuper activement le programme jusqu'a ce qu'une condition soit remplie
 			while (gettime(MILLISECOND) - start_time < time_in_ms)
 				;
 		}

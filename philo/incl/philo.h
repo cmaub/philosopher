@@ -6,7 +6,7 @@
 /*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 12:08:08 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/10 12:10:23 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/10 15:46:14 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,11 +113,13 @@ void	dinner(t_data *data);
 long	gettime(int unit);
 void	ft_usleep(long time_in_ms, t_data *data);
 void	print_status(t_philo_action action, t_philo *philo);
+void	free_destroy_mutex(t_data *data);
 
 // monitor
 void	increase_long(t_mtx *mutex, long *value);
 void	*monitor_routine(void *data);
 int	threads_running(t_mtx *mutex, long *threads_running, long philo_nbr);
+int		philo_died(t_philo *philo);
 
 // set values mutex
 int	dinner_finished(t_data *data);

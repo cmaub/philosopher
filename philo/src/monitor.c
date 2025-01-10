@@ -6,7 +6,7 @@
 /*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/09 10:38:14 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/10 13:29:00 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/10 14:48:09 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,8 @@ int		philo_died(t_philo *philo)
 {
 	long	elapsed;
 
-	// if (get_bool(&philo->philo_mutex, &philo->full))
-	// 	return (FALSE);
 	elapsed = gettime(MILLISECOND) - get_long(&philo->philo_mutex, &philo->last_meal_t);
-	// handle_mutex(&philo->philo_mutex, LOCK);
-	// printf("elapsed = %ld\n", elapsed);
-	// printf("philo->data->time_to_die = %ld\n", philo->data->time_to_die);
-	// printf("philo->last_meal_t = %ld\n", philo->last_meal_t);
-	// handle_mutex(&philo->philo_mutex, UNLOCK);
-	if (elapsed > philo->data->time_to_die)
+	if (elapsed > get_long(&philo->philo_mutex, &philo->data->time_to_die))
 		return (TRUE);
 	else
 		return (FALSE);

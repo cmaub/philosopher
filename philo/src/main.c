@@ -6,7 +6,7 @@
 /*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 14:44:39 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/10 12:31:12 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/10 15:46:08 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	main (int ac, char **av)
 		parse(&data, av);
 		data_initializer(&data);
 		dinner(&data);
-		// clean(&data);
+		free_destroy_mutex(&data);
 	}
 	else
 	{
