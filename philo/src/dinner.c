@@ -199,6 +199,7 @@ void *monitor_routine(void *arg)
 }
 
 // PB PHILO IMPAIR n'ont pas de routine
+// PB The value specified by mutex is invalid ./philo 199 402 200 200
 void	*philo_routine(void *data)
 {
 	t_philo	*philo;
