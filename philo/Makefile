@@ -3,20 +3,20 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+         #
+#    By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/07 12:07:39 by cmaubert          #+#    #+#              #
-#    Updated: 2025/01/09 11:32:13 by cmaubert         ###   ########.fr        #
+#    Updated: 2025/01/13 11:54:33 by cmaubert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
 # Compiler
-CC		= clang
+# CC		= clang
+# CFLAGS	= -Wall -Wextra -Werror -pthread -g -fsanitize=thread
+CC		= cc
 CFLAGS	= -Wall -Wextra -Werror -pthread -g -fsanitize=thread
-# CC		= cc
-# CFLAGS	= -Wall -Wextra -Werror -pthread -g
 
 
 # Sources

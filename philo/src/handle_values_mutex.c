@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_values_mutex.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:24:02 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/10 10:56:43 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/13 18:01:50 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void	increase_long(t_mtx *mutex, long *value)
 {
 	handle_mutex(mutex, LOCK);
 	(*value) = (*value)+ 1;
-	// printf("increase_long = %ld\n", *value);
 	handle_mutex(mutex, UNLOCK);
 }
 
@@ -38,11 +37,25 @@ int	get_bool(t_mtx *mutex, int *value)
 	return (result);
 }
 
-int	dinner_finished(t_data *data)
+// void	set_end(t_data *data, int i)
+// {
+// 	handle_mutex(&data->end_lock, LOCK);
+// 	data->end = TRUE;
+// 	handle_mutex(&data->end_lock, UNLOCK);
+// }
+
+void	set_end(t_data *data)
 {
-	int	result;
-	result = get_bool(&data->data_lock, &data->end);
-	return (result);
+	handle_mutex(&data->end_lock, LOCK);
+	data->end = TRUE;
+	handle_mutex(&data->end_lock, UNLOCK);
+}
+
+void	set_last_meal(t_philo *philo)
+{
+	handle_mutex(&philo->last_meal_lock, LOCK);
+	philo->last_meal_t = gettime(MILLISECOND);
+	handle_mutex(&philo->last_meal_lock, UNLOCK);
 }
 
 // LONG
@@ -63,5 +76,12 @@ long	get_long(t_mtx *mutex, long *value)
 	return (result);
 }
 
-
+int	dinner_finished(t_data *data)
+{
+	handle_mutex(&data->end_lock, LOCK);
+	if (data->end == TRUE)
+		return (handle_mutex(&data->end_lock, UNLOCK), TRUE);
+	handle_mutex(&data->end_lock, UNLOCK);
+	return (FALSE);
+}
 

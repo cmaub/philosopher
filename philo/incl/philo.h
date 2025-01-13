@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 12:08:08 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/10 15:46:14 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/13 18:19:22 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,13 @@ typedef struct s_philo
 	long		last_meal_t;
 	t_fork		*second_fork; //t_mtx *second_fork
 	t_fork		*first_fork; // t_mtx *first_fork
-	t_mtx		philo_mutex; // pour les races avec le moniteur
+	t_mtx		philo_mutex;
+	t_mtx		last_meal_lock;// pour les races avec le moniteur
 	t_data		*data;
 }	t_philo ;
 
-typedef struct s_data {
+typedef struct s_data
+{
 	long	philo_nbr;
 	long	time_to_die;
 	long	time_to_eat;
@@ -90,12 +92,14 @@ typedef struct s_data {
 	long	num_meals; // Nombre de repas que chaque philosophe doit manger -> optionnel
 	long	start_time;
 	int		end; // Flag pour indiquer si la simulation est terminée (philo meurt  ou tous sont pleins)
-	// t_mtx *forks;
+	t_mtx	end_lock;
+	t_mtx	full_lock;
 	t_fork	*forks; // tableau de fourchettes
 	t_philo	*philos; // tableau de philosophes
 	int	threads_readies;
-	t_mtx	data_mega_lock; // table mutex / pour ev
-	t_mtx	data_lock; // table mutex / pour eviter les races quand on lit dans la struct donnee
+	// t_mtx	data_mega_lock; // table mutex / pour ev
+	t_mtx	data_lock;
+	t_mtx	data_mega_lock;// table mutex / pour eviter les races quand on lit dans la struct donnee
 	t_mtx	print_lock; // Mutex pour protéger les sorties sur la console
 	pthread_t	monitor;
 	pthread_t	supervisor; // to do -> check la mort et les repas des philos
@@ -114,6 +118,8 @@ long	gettime(int unit);
 void	ft_usleep(long time_in_ms, t_data *data);
 void	print_status(t_philo_action action, t_philo *philo);
 void	free_destroy_mutex(t_data *data);
+int		all_philos_full(t_data *data);
+
 
 // monitor
 void	increase_long(t_mtx *mutex, long *value);
@@ -127,6 +133,8 @@ int	get_bool(t_mtx *mutex, int *value);
 void	set_bool(t_mtx *mutex, int *dest, int value);
 void	set_long(t_mtx *mutex, long *dest, long value);
 long	get_long(t_mtx *mutex, long *value);
+void	set_last_meal(t_philo *philo);
+void	set_end(t_data *data);
 
 
 void print_data(t_data *data);

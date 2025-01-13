@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   write.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 17:12:59 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/10 16:08:37 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/13 18:20:31 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,14 @@ void print_data(t_data *data) {
     }
 }
 
-void debug_status(t_philo_action action, t_philo *philo) {
+void debug_status(t_philo_action action, t_philo *philo) 
+{
 
     handle_mutex(&philo->data->print_lock, LOCK);
     long elapsed = gettime(MILLISECOND) - philo->data->start_time;
 
-
-    // if (philo->full || philo->data->end)
-    //     return;
+    // if (dinner_finished(philo->data) || all_philos_full(philo->data) == TRUE)
+    //     return; // PB ici
      printf("[%ld ms] " CYAN "**%d**" RESET ": ", elapsed, philo->id);
 
     switch (action) {
@@ -88,44 +88,43 @@ void debug_status(t_philo_action action, t_philo *philo) {
 
     printf("  [DEBUG] Meals eaten: %ld, Last meal time: %ld\n", philo->nb_meals_eaten, philo->last_meal_t);
     // printf("  [DEBUG] Data -> Philosopher count: %ld, Time to die: %ld\n", philo->data->philo_nbr, philo->data->time_to_die);
-
     handle_mutex(&philo->data->print_lock, UNLOCK);
 }
 
 void	print_status(t_philo_action action, t_philo *philo)
 {
-	// debug_status(action, philo);
-	long	elapsed;
+	debug_status(action, philo);
+	// long	elapsed;
 
-    handle_mutex(&philo->data->print_lock, LOCK);
-	elapsed = gettime(MILLISECOND) - philo->data->start_time;
-	if (philo->full || dinner_finished(philo->data))
-		return ;
+    // handle_mutex(&philo->data->print_lock, LOCK);
+	// elapsed = gettime(MILLISECOND) - philo->data->start_time;
+	// // if (philo->full || philo->data->end)
+	// // 	return ;
+	// // if ((TAKE_FIRST_FORK == action|| TAKE_SECOND_FORK == action))
+	// // {
+	// // 	if (TAKE_FIRST_FORK == action)
+	// // 		printf("%ld ms Philosopher %d has taken the first fork (number %d)\n", elapsed, philo->id, philo->first_fork->fork_id);
+	// // 	if (TAKE_SECOND_FORK == action)
+	// // 		printf("%ld ms Philosopher %d has taken the second fork (number %d)\n", elapsed, philo->id, philo->second_fork->fork_id);
+	// // }
+	// // else if (EATING == action)
+	// // 	printf("%ld ms Philosopher %d is eating\n", elapsed, philo->id);
+	// // else if (SLEEPING == action)
+	// // 	printf("%ld ms Philosopher %d is sleeping\n", elapsed, philo->id);
+	// // else if (THINKING == action)
+	// // 	printf("%ld ms Philosopher %d is thinking\n", elapsed, philo->id);
+	// // else if (DIED == action)
+	// // 	printf("%ld ms Philosopher %d is dead\n", elapsed, philo->id);
 
-	// if ((TAKE_FIRST_FORK == action|| TAKE_SECOND_FORK == action))
-	// {
-	// 	if (TAKE_FIRST_FORK == action)
-	// 		printf("%ld ms Philosopher %d has taken the first fork (number %d)\n", elapsed, philo->id, philo->first_fork->fork_id);
-	// 	if (TAKE_SECOND_FORK == action)
-	// 		printf("%ld ms Philosopher %d has taken the second fork (number %d)\n", elapsed, philo->id, philo->second_fork->fork_id);
-	// }
-	// else if (EATING == action)
-	// 	printf("%ld ms Philosopher %d is eating\n", elapsed, philo->id);
+    // // pour philo_visualizer
+    // if (EATING == action)
+	// 	printf("%ld %d is eating\n", elapsed, philo->id);
 	// else if (SLEEPING == action)
-	// 	printf("%ld ms Philosopher %d is sleeping\n", elapsed, philo->id);
+	// 	printf("%ld %d is sleeping\n", elapsed, philo->id);
 	// else if (THINKING == action)
-	// 	printf("%ld ms Philosopher %d is thinking\n", elapsed, philo->id);
+	// 	printf("%ld %d is thinking\n", elapsed, philo->id);
 	// else if (DIED == action)
-	// 	printf("%ld ms Philosopher %d is dead\n", elapsed, philo->id);
+	// 	printf("%ld %d is dead\n", elapsed, philo->id);
 
-    else if (EATING == action)
-		printf("%ld %d is eating\n", elapsed, philo->id);
-	else if (SLEEPING == action)
-		printf("%ld %d is sleeping\n", elapsed, philo->id);
-	else if (THINKING == action)
-		printf("%ld %d is thinking\n", elapsed, philo->id);
-	else if (DIED == action)
-		printf("%ld %d is dead\n", elapsed, philo->id);
-
-    handle_mutex(&philo->data->print_lock, UNLOCK);
+    // handle_mutex(&philo->data->print_lock, UNLOCK);
 }

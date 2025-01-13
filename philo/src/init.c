@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:56:33 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/10 12:23:03 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/13 18:13:05 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,19 +30,18 @@ static void	assign_fork(t_philo *philo, t_fork *forks, int position)
 void	philo_initializer(t_data *data)
 {
 	int	i;
-	t_philo	*philo;
 
 	i = -1;
 	while (++i < data->philo_nbr)
 	{
-		philo = data->philos + i;
-		philo->id = i + 1;
-		philo->full = FALSE;
-		philo->nb_meals_eaten = 0;
-		philo->last_meal_t = gettime(MILLISECOND);
-		philo->data = data;
-		handle_mutex(&philo->philo_mutex, INIT);
-		assign_fork(philo, data->forks, i);
+		data->philos[i].id = i + 1;
+		data->philos[i].full = FALSE;
+		data->philos[i].nb_meals_eaten = 0;
+		data->philos[i].last_meal_t = gettime(MILLISECOND);
+		data->philos[i].data = data;
+		handle_mutex(&data->philos[i].philo_mutex, INIT);
+		handle_mutex(&data->philos[i].last_meal_lock, INIT);
+		assign_fork(&data->philos[i], data->forks, i);
 	}
 
 }
@@ -59,8 +58,10 @@ void	data_initializer(t_data *data)
 	data->forks = try_malloc(sizeof(t_fork) * data->philo_nbr);
 	data->start_time  = gettime(MILLISECOND);
 	handle_mutex(&data->data_lock, INIT);
-	handle_mutex(&data->data_mega_lock, INIT);
+	handle_mutex(&data->end_lock, INIT);
+	handle_mutex(&data->full_lock, INIT);
 	handle_mutex(&data->print_lock, INIT);
+	handle_mutex(&data->data_mega_lock, INIT);
 	while (++i < data->philo_nbr)
 	{
 		handle_mutex(&data->forks[i].fork, INIT);
@@ -69,7 +70,6 @@ void	data_initializer(t_data *data)
 	// printf("data->threads_running_nb = %ld\n", data->threads_running_nb);
 	philo_initializer(data);
 	// printf("AFTER data->threads_running_nb = %ld\n", data->threads_running_nb);
-
 	// print_data(data);
 }
 

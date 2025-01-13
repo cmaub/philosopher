@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/09 10:38:14 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/10 14:48:09 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/13 18:43:23 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,78 +34,70 @@ int		philo_died(t_philo *philo)
 		return (FALSE);
 }
 
-void	*monitor_routine2(void *arg)
+int	is_full(t_philo *philo)
 {
-	// (void)data;
-	t_data	*data;
-	int		i;
-	// long	elapsed;
+	handle_mutex(&philo->data->full_lock, LOCK);
+	if (philo->full == TRUE)
+	{
+		handle_mutex(&philo->data->full_lock, UNLOCK);
+		return (TRUE);
+	}
+	handle_mutex(&philo->data->full_lock, UNLOCK);
+	return (FALSE);
+}
+	
+// monitor -> arrete le programme quand : tous le philos ont mangé le numbre de repas a manger (num_eat) ou quand ils ont un temps supérieur a time_to_die entre deux repas
+void *monitor_routine(void *arg)
+{
+	int i;
+	long current_time;
+	long last_meal_time;
+	long elapsed;
+	t_data *data = (t_data *)arg;
 
-	data = (t_data *)arg;
-	printf("COUCOU");
-	// // spinlock tant que tous les thread ne sont pas arrives ici
-	while (threads_running(&data->data_lock,
-		&data->threads_running_nb, data->philo_nbr) == FALSE)
-	{
-		printf("COUCOU");
-		if (threads_running(&data->data_lock,
-			&data->threads_running_nb, data->philo_nbr) == TRUE)
-		{
-			printf("\n\n\n******************break\n\n\n");
-			break ;
-		}
-	}
-	// handle_mutex(&data->data_lock, LOCK);
-	// printf("*****threads_running = %ld\n", data->threads_running_nb);
-	// handle_mutex(&data->data_lock, UNLOCK);
-	// PROBLEME -> on ne rentre jamais dans la boucle + data race
-	while (data->end == FALSE)
-	{
-		i = -1;
-		while(++i < data->philo_nbr && data->end == FALSE)
-		{
-			if (philo_died(data->philos + i))
-			{
-				set_bool(&data->data_lock, &data->end, TRUE);
-				print_status(DIED, data->philos + i);
-			}
-			if (data->num_meals == data->philos->nb_meals_eaten)
-			{
-				set_bool(&data->data_mega_lock, &data->end, TRUE);
-				printf("*** philos ont tous manges\n");
-			}
-		}
-	}
-	// while (!data->end)
+	// while (threads_running(&data->data_lock,
+	// 	&data->threads_running_nb, data->philo_nbr) == FALSE)
 	// {
-	// 	handle_mutex(&data->data_lock, LOCK);
-	// 	// printf("gettime(MILLISECOND) = %ld\n", gettime(MILLISECOND));
-	// 	// printf("get_long(&philo->philo_mutex, &philo->last_meal_t) = %ld", get_long(&data->philos->philo_mutex, &data->philos->last_meal_t));
-	// 	// printf("elapsed = %ld\n", elapsed);
-	// 	// printf("philo->data->time_to_die = %ld\n", philo->data->time_to_die);
-	// 	i = -1;
-	// 	while (++i < data->philo_nbr && !dinner_finished(data))
+	// 	if (threads_running(&data->data_lock,
+	// 		&data->threads_running_nb, data->philo_nbr) == TRUE)
 	// 	{
 
-	// 		// last_meal_time = get_long(&data->philos[i]->philo_mutex, &data->philos[i]->last_meal_t);
-	// 		elapsed = gettime(MILLISECOND) - get_long(&data->philos->philo_mutex, &data->philos[i].last_meal_t);
-	// 		if (elapsed >= data->time_to_die)
-	// 		{
-	// 			set_bool(&data->data_mega_lock, &data->end, TRUE);
-	// 			print_status(DIED, data->philos + i);
-
-	// 		}
-	// 		printf("1 ICI\n");
-	// 		set_bool(&data->data_mega_lock, &data->end, TRUE);
-	// 		printf("2 ICI\n");
-
-	// 		if (data->num_meals == data->philos->nb_meals_eaten)
-	// 		{
-	// 			set_bool(&data->data_mega_lock, &data->end, TRUE);
-	// 			printf("***philos ont tous manges\n");
-	// 		}
+	// 		printf("\n\n\n******************break\n\n\n");
+	// 		printf("threads_running_nb = %ld\n", data->threads_running_nb);
+	// 		break ;
 	// 	}
-	// 	handle_mutex(&data->data_lock, UNLOCK);
 	// }
+	
+	while (dinner_finished(data) == FALSE)
+	{
+		i = -1;
+		while (++i < data->philo_nbr && dinner_finished(data) == FALSE)
+		{
+			current_time = gettime(MILLISECOND);
+			handle_mutex(&data->philos[i].last_meal_lock, LOCK);
+			last_meal_time = data->philos[i].last_meal_t;
+			handle_mutex(&data->philos[i].last_meal_lock, UNLOCK);
+			elapsed = current_time - last_meal_time;
+			// handle_mutex(&data->full_lock, LOCK);
+			if (elapsed > data->time_to_die && is_full(&data->philos[i]) == TRUE ) // et que philo nest pas full ++ sil est full
+			{
+				handle_mutex(&data->end_lock, LOCK);
+				data->end = TRUE ;
+				handle_mutex(&data->end_lock, UNLOCK);
+				print_status(DIED, &data->philos[i]);
+				break;
+			}
+			// handle_mutex(&data->full_lock, UNLOCK);
+			if (all_philos_full(data) == TRUE)
+			{
+				handle_mutex(&data->end_lock, LOCK);
+				data->end = TRUE;
+				printf("*** Philosophes rassasies !\n");
+				handle_mutex(&data->end_lock, UNLOCK);
+				// break; //??????
+			}
+		}
+		usleep(10); // Sleep pour reduire l'activite du CPU ? a tester avec diff valeurs
+	}
 	return (NULL);
 }
