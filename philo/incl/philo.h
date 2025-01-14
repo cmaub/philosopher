@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 12:08:08 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/13 18:19:22 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/14 14:15:54 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ typedef struct s_data
 	int		end; // Flag pour indiquer si la simulation est terminée (philo meurt  ou tous sont pleins)
 	t_mtx	end_lock;
 	t_mtx	full_lock;
+	t_mtx	start_lock;
 	t_fork	*forks; // tableau de fourchettes
 	t_philo	*philos; // tableau de philosophes
 	int	threads_readies;
@@ -120,21 +121,24 @@ void	print_status(t_philo_action action, t_philo *philo);
 void	free_destroy_mutex(t_data *data);
 int		all_philos_full(t_data *data);
 
+void	think(t_philo *philo);
+void	desynchronise_threads(t_philo *philo);
 
 // monitor
 void	increase_long(t_mtx *mutex, long *value);
 void	*monitor_routine(void *data);
 int	threads_running(t_mtx *mutex, long *threads_running, long philo_nbr);
 int		philo_died(t_philo *philo);
+void	synchronise_threads(t_data	*data);
 
 // set values mutex
-int	dinner_finished(t_data *data);
+int	dinner_end(t_data *data);
 int	get_bool(t_mtx *mutex, int *value);
 void	set_bool(t_mtx *mutex, int *dest, int value);
 void	set_long(t_mtx *mutex, long *dest, long value);
 long	get_long(t_mtx *mutex, long *value);
 void	set_last_meal(t_philo *philo);
-void	set_end(t_data *data);
+void	set_end_true(t_data *data);
 
 
 void print_data(t_data *data);

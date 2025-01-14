@@ -15,6 +15,8 @@
 // ./philo num_of_philo time_to_die time_to_eat time_to_sleep [num_eat]
 // ./philo 5 800 200 200 [5]
 
+// ./philo 5 100 500 1000 3 : pb le philo ne meurt pas tout de suite
+
 int	all_philos_full(t_data *data)
 {
 	int i;
@@ -39,71 +41,94 @@ int	all_philos_full(t_data *data)
 	return (FALSE);
 }
 
-static void	eat(t_philo *philo)
+void	increase_nb_meals(t_philo *philo)
 {
-	if (all_philos_full(philo->data) == TRUE)
-	{ // mettre a jour end
-		handle_mutex(&philo->data->end_lock, LOCK);
-		philo->data->end = TRUE ;
-		handle_mutex(&philo->data->end_lock, UNLOCK);
-		printf("eat = all_philo_full");
-		return ;
-	}
-	handle_mutex(&philo->first_fork->fork, LOCK);
-	print_status(TAKE_FIRST_FORK, philo);
-	handle_mutex(&philo->second_fork->fork, LOCK);
-	print_status(TAKE_SECOND_FORK, philo);
-	set_last_meal(philo);
-	increase_long(&philo->philo_mutex, &philo->nb_meals_eaten);
-	print_status(EATING, philo);
-	ft_usleep(philo->data->time_to_eat, philo->data);
-	handle_mutex(&philo->data->full_lock, LOCK);
-	if (philo->data->num_meals > 0
-		&& philo->nb_meals_eaten == philo->data->num_meals)		
-			philo->full = TRUE;
-	handle_mutex(&philo->data->full_lock, UNLOCK);		// checker si tous full
-	handle_mutex(&philo->first_fork->fork, UNLOCK);
-	handle_mutex(&philo->second_fork->fork, UNLOCK);
+	handle_mutex(&philo->philo_mutex, LOCK);
+	philo->nb_meals_eaten = philo->nb_meals_eaten + 1;
+	handle_mutex(&philo->philo_mutex, UNLOCK);
 }
 
-// revoir la fonction THINK
-static void	think(t_philo *philo/*, int bool*/)
-{
-	long	t_to_think;
-	long	t_to_sleep;
-	long	t_to_eat;
-
-	// if (bool == FALSE)
-	// {
-	// 	print_status(THINKING, philo);
-	// }
-	// si le nb est pair aucun philo ne peux manger plus de 2 fois sans penser
-	// donc pas besoin d'ajouter du temps
-	if (all_philos_full(philo->data) == TRUE)
-	{
-			printf("**** think = all_philo_full");
-			return ;
-	}
-	if (philo->data->philo_nbr % 2 == 0)
-	{
-		print_status(THINKING, philo);
-		return ;
-	}
-	// philo impair
-	t_to_eat = philo->data->time_to_eat;
-	t_to_sleep = philo->data->time_to_sleep;
-	t_to_think = t_to_eat * 2 - t_to_sleep;
-	if (t_to_think < 0)
-		t_to_think = 0;
-	ft_usleep(t_to_think * 0.50, philo->data);
-	print_status(THINKING, philo);
-}
-
-static void	synchronise_threads(t_data	*data)
+void	synchronise_threads(t_data	*data)
 {
 	//tous les threads passent par la, tant qu'il y en a un qui n'est pas pret reste dans la boucle
 	while (!get_bool(&data->data_lock, &data->threads_readies))
 		;
+}
+
+void	took_forks(t_philo *philo)
+{
+	handle_mutex(&philo->first_fork->fork, LOCK);
+	printf("philo->id = %d, took 1st fork = %d\n", philo->id, philo->first_fork->fork_id);
+	if (!all_philos_full(philo->data) && !dinner_end(philo->data))
+		print_status(TAKE_FIRST_FORK, philo);
+	handle_mutex(&philo->second_fork->fork, LOCK);
+	printf("philo->id = %d, took 2nd fork = %d\n", philo->id, philo->second_fork->fork_id);
+	if (!all_philos_full(philo->data) && !dinner_end(philo->data))
+		print_status(TAKE_SECOND_FORK, philo);
+}
+
+void	eat(t_philo *philo)
+{
+	if (((!all_philos_full(philo->data) && philo->data->num_meals > 0)
+		|| philo->data->num_meals == -1) // attention au -1 --> revoir peut etre la valeur
+		&& !dinner_end(philo->data))
+	{
+		took_forks(philo);
+		if (!all_philos_full(philo->data) && !dinner_end(philo->data))
+			print_status(EATING, philo);
+		set_last_meal(philo);
+		increase_nb_meals(philo);
+		ft_usleep(philo->data->time_to_eat, philo->data);
+		handle_mutex(&philo->first_fork->fork, UNLOCK);
+		handle_mutex(&philo->second_fork->fork, UNLOCK);
+	}
+	handle_mutex(&philo->data->full_lock, LOCK);
+	if (philo->data->num_meals > 0
+		&& philo->nb_meals_eaten == philo->data->num_meals)		
+			philo->full = TRUE;
+	handle_mutex(&philo->data->full_lock, UNLOCK);	
+}
+
+void	think(t_philo *philo)
+{
+	if (!all_philos_full(philo->data) && !dinner_end(philo->data))
+	{
+		if (!all_philos_full(philo->data) && !dinner_end(philo->data))
+			print_status(THINKING, philo);
+		if (philo->data->philo_nbr % 2 != 0)
+			ft_usleep(philo->data->time_to_eat * 0.5, philo->data);
+	}
+}
+
+void	ft_sleep(t_philo *philo)
+{
+	if (!all_philos_full(philo->data) && !dinner_end(philo->data))
+	{
+		if (!all_philos_full(philo->data) && !dinner_end(philo->data))
+		print_status(SLEEPING, philo);
+		ft_usleep(philo->data->time_to_sleep, philo->data);
+	}
+}
+
+// PB The value specified by mutex is invalid ./philo 199 402 200 200
+// PB quand philo doit mourrir il affiche des fois la mort plusieurs fois
+void	*philo_routine(void *data)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)data;
+	synchronise_threads(philo->data); //spinlock a voir si je remplace par un mutex
+	set_last_meal(philo);
+	increase_long(&philo->data->data_lock, &philo->data->threads_running_nb);
+	if (philo->id % 2 != 0)
+		ft_usleep(philo->data->time_to_eat / 2, philo->data);
+	while (!dinner_end(philo->data) && !all_philos_full(philo->data))
+	{
+		eat(philo);
+		ft_sleep(philo);
+		think(philo);
+	}
+	return (NULL);
 }
 
 void	*lonely_philo_routine(void *data)
@@ -111,48 +136,12 @@ void	*lonely_philo_routine(void *data)
 	t_philo	*philo;
 
 	philo = (t_philo *)data;
-	handle_mutex(&philo->philo_mutex, LOCK);
-	dprintf(2, "lonely_philo_routine\n");
-	handle_mutex(&philo->philo_mutex, UNLOCK);
 	synchronise_threads(philo->data);
 	set_last_meal(philo);
-	// increase_long(&philo->data->data_lock, &philo->data->threads_running_nb);;
+	increase_long(&philo->data->data_lock, &philo->data->threads_running_nb);;
 	print_status(TAKE_FIRST_FORK, philo);
-	while (!dinner_finished(philo->data))
+	while (!dinner_end(philo->data))
 		usleep(200);
-	return (NULL);
-
-}
-
-// PB The value specified by mutex is invalid ./philo 199 402 200 200
-void	*philo_routine(void *data)
-{
-	t_philo	*philo;
-
-	philo = (t_philo *)data;
-	//spinlock
-	synchronise_threads(philo->data);
-	set_last_meal(philo);
-	increase_long(&philo->data->data_lock, &philo->data->threads_running_nb);
-	// desyncroniser les philos ? pour lancer les pairs et impair differemment
-	// desynchronise_threads(philo);
-	while (dinner_finished(philo->data) == FALSE)
-	{
-		eat(philo);
-		if (all_philos_full(philo->data) == TRUE || dinner_finished(philo->data) == TRUE)
-		{
-			printf("***sleep = all_philo_full 1\n");
-			break ;
-		}
-		print_status(SLEEPING, philo);
-		ft_usleep(philo->data->time_to_sleep, philo->data);
-		if (all_philos_full(philo->data) == TRUE || dinner_finished(philo->data) == TRUE)
-		{
-			printf("***sleep = all_philo_full 2\n");
-			break ;
-		}
-		think(philo);/*, FALSE*/
-	}
 	return (NULL);
 }
 
@@ -161,8 +150,7 @@ void	dinner(t_data *data)
 	int	i;
 
 	i = -1;
-	if (data->num_meals == 0)
-		return ;
+	// print_data(data);
 	if (data->philo_nbr == 1)
 		handle_thread(&data->philos[0].thread_id, lonely_philo_routine, &data->philos[0], CREATE);
 	else
@@ -170,9 +158,8 @@ void	dinner(t_data *data)
 		while (++i < data->philo_nbr)
 			handle_thread(&data->philos[i].thread_id, philo_routine, &data->philos[i], CREATE);
 	}
-	// moniteur qui check la mort des philo
 	handle_thread(&data->monitor, monitor_routine, data, CREATE);
-	// une fois que tous les philos sont crees on peut commencer le repas, mise a jout de threads_readies
+	data->start_time = gettime(MILLISECOND);
 	set_bool(&data->data_lock, &data->threads_readies, TRUE);
 	handle_thread(&data->monitor, NULL, NULL, JOIN); // leak si mis apres le join des philos
 	i = -1;

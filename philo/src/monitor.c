@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/09 10:38:14 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/13 18:43:23 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/14 12:22:22 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,34 +67,33 @@ void *monitor_routine(void *arg)
 	// 		break ;
 	// 	}
 	// }
-	
-	while (dinner_finished(data) == FALSE)
+	// 
+	synchronise_threads(data);
+	while (dinner_end(data) == FALSE)
 	{
 		i = -1;
-		while (++i < data->philo_nbr && dinner_finished(data) == FALSE)
+		while (++i < data->philo_nbr && !dinner_end(data)) // revoir peut-etre la condition
 		{
 			current_time = gettime(MILLISECOND);
 			handle_mutex(&data->philos[i].last_meal_lock, LOCK);
 			last_meal_time = data->philos[i].last_meal_t;
 			handle_mutex(&data->philos[i].last_meal_lock, UNLOCK);
 			elapsed = current_time - last_meal_time;
-			// handle_mutex(&data->full_lock, LOCK);
-			if (elapsed > data->time_to_die && is_full(&data->philos[i]) == TRUE ) // et que philo nest pas full ++ sil est full
+			if (elapsed > data->time_to_die) // et que philo nest pas full ++ sil est full
 			{
-				handle_mutex(&data->end_lock, LOCK);
+				handle_mutex(&data->end_lock, LOCK); // verifier le lock
 				data->end = TRUE ;
 				handle_mutex(&data->end_lock, UNLOCK);
 				print_status(DIED, &data->philos[i]);
 				break;
 			}
-			// handle_mutex(&data->full_lock, UNLOCK);
 			if (all_philos_full(data) == TRUE)
 			{
 				handle_mutex(&data->end_lock, LOCK);
 				data->end = TRUE;
 				printf("*** Philosophes rassasies !\n");
 				handle_mutex(&data->end_lock, UNLOCK);
-				// break; //??????
+				break; //??????
 			}
 		}
 		usleep(10); // Sleep pour reduire l'activite du CPU ? a tester avec diff valeurs

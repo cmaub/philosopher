@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:56:33 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/13 18:13:05 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/14 10:08:01 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ void	data_initializer(t_data *data)
 	handle_mutex(&data->end_lock, INIT);
 	handle_mutex(&data->full_lock, INIT);
 	handle_mutex(&data->print_lock, INIT);
+	handle_mutex(&data->start_lock, INIT);
 	handle_mutex(&data->data_mega_lock, INIT);
 	while (++i < data->philo_nbr)
 	{

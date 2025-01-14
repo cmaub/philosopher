@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 16:40:34 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/09 09:49:16 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/14 16:23:25 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,12 +88,17 @@ static long	ft_atol(char *str)
 
 // ./philo num_of_philo time_to_die time_to_eat time_to_sleep [num_eat]
 // ./philo 5 800 200 200 [5]
-	// 1 ms 	= milliseconde = 10puissance-3 = 1/1000 = 1000 microsecondes
+	// 1 ms = milliseconde = 10puissance-3 = 1/1000 = 1000 microsecondes
 	// 1 us	= microseconde = 10puissance-6 = 1/1000000 = 0,001 milliseconde
 	// usleep = microseconde
 void	parse(t_data *data, char **av)
 {
+	// ajouter verification si bien chiffres
 	data->philo_nbr = ft_atol(av[1]);
+	if (data->philo_nbr > 200 || data->philo_nbr <= 0 )
+	{
+		erro_exit("philo number must be less than 200 and more than 0");
+	}
 	data->time_to_die = ft_atol(av[2]);
 	data->time_to_eat = ft_atol(av[3]);
 	data->time_to_sleep = ft_atol(av[4]);
@@ -102,7 +107,15 @@ void	parse(t_data *data, char **av)
 			|| data->time_to_sleep < 60)
 			erro_exit("Timestamps must be major than 60ms");
 	if (av[5])
+	{
 		data->num_meals = ft_atol(av[5]);
+		if (data->num_meals <= 0)
+			erro_exit("number of meals must be more tan 0");
+	}
 	else
 		data->num_meals = -1;
 }
+
+//./philo 5 450 200 200 -> pb 2 philo mangent en mm temps alors quil ne devraient pas
+// time_to_die doit etre 3 fois sup au time_to_eat quand nb impair de philo
+// qd nb pair time to die doit etre au moins 2 fois sup au temps time_to_eat

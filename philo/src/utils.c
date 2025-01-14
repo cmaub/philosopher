@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 16:34:03 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/13 18:23:23 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/14 14:23:49 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	free_destroy_mutex(t_data *data)
 	handle_mutex(&data->end_lock, DESTROY);
 	handle_mutex(&data->full_lock, DESTROY);
 	handle_mutex(&data->data_mega_lock, DESTROY);
+	handle_mutex(&data->start_lock, DESTROY);
 	free(data->philos);
 	free(data->forks);
 }
@@ -111,9 +112,11 @@ void	ft_usleep(long time_in_ms, t_data *data)
 	long	remaining;
 
 	start_time = gettime(MILLISECOND);
+	if (dinner_end(data) == TRUE)
+		return ;
 	while (gettime(MILLISECOND) - start_time < time_in_ms)
 	{
-		// if (dinner_finished(data))
+		// if (dinners_end(data))
 		// 	break ;
 		elapsed = gettime(MILLISECOND) - start_time;
 		remaining = time_in_ms - elapsed;
