@@ -58,11 +58,11 @@ void	synchronise_threads(t_data	*data)
 void	took_forks(t_philo *philo)
 {
 	handle_mutex(&philo->first_fork->fork, LOCK);
-	printf("philo->id = %d, took 1st fork = %d\n", philo->id, philo->first_fork->fork_id);
+	// printf("philo->id = %d, took 1st fork = %d\n", philo->id, philo->first_fork->fork_id);
 	if (!all_philos_full(philo->data) && !dinner_end(philo->data))
 		print_status(TAKE_FIRST_FORK, philo);
 	handle_mutex(&philo->second_fork->fork, LOCK);
-	printf("philo->id = %d, took 2nd fork = %d\n", philo->id, philo->second_fork->fork_id);
+	// printf("philo->id = %d, took 2nd fork = %d\n", philo->id, philo->second_fork->fork_id);
 	if (!all_philos_full(philo->data) && !dinner_end(philo->data))
 		print_status(TAKE_SECOND_FORK, philo);
 }
@@ -105,7 +105,7 @@ void	ft_sleep(t_philo *philo)
 	if (!all_philos_full(philo->data) && !dinner_end(philo->data))
 	{
 		if (!all_philos_full(philo->data) && !dinner_end(philo->data))
-		print_status(SLEEPING, philo);
+			print_status(SLEEPING, philo);
 		ft_usleep(philo->data->time_to_sleep, philo->data);
 	}
 }
@@ -120,10 +120,14 @@ void	*philo_routine(void *data)
 	synchronise_threads(philo->data); //spinlock a voir si je remplace par un mutex
 	set_last_meal(philo);
 	increase_long(&philo->data->data_lock, &philo->data->threads_running_nb);
-	if (philo->id % 2 != 0)
+	if (philo->id % 2 == 0)
 		ft_usleep(philo->data->time_to_eat / 2, philo->data);
+	// if (philo->id == philo->data->philo_nbr)
+	// 	ft_usleep(200, philo->data);
+		// ft_usleep(400, philo->data);
 	while (!dinner_end(philo->data) && !all_philos_full(philo->data))
 	{
+		// rajouter une condition qui verifie que le 
 		eat(philo);
 		ft_sleep(philo);
 		think(philo);
@@ -152,13 +156,28 @@ void	dinner(t_data *data)
 	i = -1;
 	// print_data(data);
 	if (data->philo_nbr == 1)
-		handle_thread(&data->philos[0].thread_id, lonely_philo_routine, &data->philos[0], CREATE);
+	{
+		if (!handle_thread(&data->philos[0].thread_id, lonely_philo_routine, &data->philos[0], CREATE))
+			return ;
+	}
 	else
 	{
 		while (++i < data->philo_nbr)
-			handle_thread(&data->philos[i].thread_id, philo_routine, &data->philos[i], CREATE);
+		{
+			if (!handle_thread(&data->philos[i].thread_id, philo_routine, &data->philos[i], CREATE))
+			{
+				while (i > 0)
+					handle_thread(&data->philos[i].thread_id, NULL, NULL, JOIN);
+				return ;
+			}
+		}
 	}
-	handle_thread(&data->monitor, monitor_routine, data, CREATE);
+	if (!handle_thread(&data->monitor, monitor_routine, data, CREATE))
+	{
+		while (i > 0)
+			handle_thread(&data->philos[i].thread_id, NULL, NULL, JOIN);
+		return ;
+	}
 	data->start_time = gettime(MILLISECOND);
 	set_bool(&data->data_lock, &data->threads_readies, TRUE);
 	handle_thread(&data->monitor, NULL, NULL, JOIN); // leak si mis apres le join des philos

@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/09 10:38:14 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/14 12:22:22 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/14 18:08:55 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void *monitor_routine(void *arg)
 	// 	}
 	// }
 	// 
-	synchronise_threads(data);
+	// synchronise_threads(data);
 	while (dinner_end(data) == FALSE)
 	{
 		i = -1;

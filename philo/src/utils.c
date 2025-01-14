@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 16:34:03 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/14 14:23:49 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/14 16:51:29 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void	free_destroy_mutex(t_data *data)
 	{
 		handle_mutex(&data->philos[i].philo_mutex, DESTROY);
 		handle_mutex(&data->philos[i].last_meal_lock, DESTROY);
+		// handle_mutex(&data->philos[i].forks_lock, DESTROY);
 	}
 	i = -1;
 	while (++i < data->philo_nbr)

@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 12:08:08 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/14 14:15:54 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/14 17:23:41 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ typedef struct s_data
 void	erro_exit(char *error);
 void	*try_malloc(size_t size);
 void	parse(t_data *data, char **av);
-void	handle_thread(pthread_t *thread, void *(*routine)(void *), void *data, t_philo_code code);
+int		handle_thread(pthread_t *thread, void *(*routine)(void *), void *data, t_philo_code code);
 void	handle_mutex(t_mtx *mutex, t_philo_code code);
 void	data_initializer(t_data *data);
 void	philo_initializer(t_data *data);
@@ -123,17 +123,16 @@ int		all_philos_full(t_data *data);
 
 void	think(t_philo *philo);
 void	desynchronise_threads(t_philo *philo);
-
 // monitor
 void	increase_long(t_mtx *mutex, long *value);
 void	*monitor_routine(void *data);
-int	threads_running(t_mtx *mutex, long *threads_running, long philo_nbr);
+int		threads_running(t_mtx *mutex, long *threads_running, long philo_nbr);
 int		philo_died(t_philo *philo);
 void	synchronise_threads(t_data	*data);
 
 // set values mutex
-int	dinner_end(t_data *data);
-int	get_bool(t_mtx *mutex, int *value);
+int		dinner_end(t_data *data);
+int		get_bool(t_mtx *mutex, int *value);
 void	set_bool(t_mtx *mutex, int *dest, int value);
 void	set_long(t_mtx *mutex, long *dest, long value);
 long	get_long(t_mtx *mutex, long *value);

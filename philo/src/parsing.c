@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 16:40:34 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/14 16:23:25 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/14 17:27:33 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,5 +117,6 @@ void	parse(t_data *data, char **av)
 }
 
 //./philo 5 450 200 200 -> pb 2 philo mangent en mm temps alors quil ne devraient pas
-// time_to_die doit etre 3 fois sup au time_to_eat quand nb impair de philo
-// qd nb pair time to die doit etre au moins 2 fois sup au temps time_to_eat
+// faut-il que ce soit une regle au moment du parsing ou cela signifie que pour vivre il faut que
+// nb impair de philo = time_to_die doit etre 3 fois sup au time_to_eat
+// nb pair de philo = time to die doit etre au moins 2 fois sup au temps time_to_eat
