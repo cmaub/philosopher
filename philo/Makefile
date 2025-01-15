@@ -6,7 +6,7 @@
 #    By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/07 12:07:39 by cmaubert          #+#    #+#              #
-#    Updated: 2025/01/13 11:54:33 by cmaubert         ###   ########.fr        #
+#    Updated: 2025/01/15 16:40:45 by cmaubert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,8 +14,9 @@ NAME = philo
 
 # Compiler
 # CC		= clang
-# CFLAGS	= -Wall -Wextra -Werror -pthread -g -fsanitize=thread
+
 CC		= cc
+# CFLAGS	= -Wall -Wextra -Werror
 CFLAGS	= -Wall -Wextra -Werror -pthread -g -fsanitize=thread
 
 
@@ -29,7 +30,8 @@ SRC_FILES	= main.c \
 				handle_values_mutex.c \
 				threads_mutex.c \
 				write.c \
-				monitor.c
+				monitor.c \
+				time.c
 SRCS	= $(addprefix $(SRC_PATH), $(SRC_FILES))
 
 # Header

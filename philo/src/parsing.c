@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 16:40:34 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/14 17:27:33 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/15 17:11:18 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,6 @@
 
 // ./philo num_of_philo time_to_die time_to_eat time_to_sleep [num_eat]
 // ./philo 5 800 200 200 [5]
-
-// typedef struct s_data {
-// 	long	num_philo;
-// 	long	time_to_die;
-// 	long	time_to_eat;
-// 	long	time_to_sleep;
-// 	long num_meals; // Nombre de repas que chaque philosophe doit manger
-// 	long start_time;
-// 	int end; // Flag pour indiquer si la simulation est terminée (philo meurt ou tous sont pleins)
-// 	// t_mtx *forks;
-// 	t_fork	*forks; // tableau de fourchettes
-// 	t_philo	*philos; // tableau de philosophes
-// 	// t_mtx print_lock; // Mutex pour protéger les sorties sur la console
-// } t_data;
 
 static int	is_space(char c)
 {
@@ -38,17 +24,16 @@ static int	is_space(char c)
 	return (0);
 }
 
-static int	ft_isdigit(int c)
+static int	ft_isalnum(int c)
 {
-	if (!(c >= '0' && c <= '9'))
-		return (0);
+	if (c >= '0' && c <= '9')
+		return (TRUE);
 	else
-		return (c);
+		return (FALSE);
 }
 
-static char	*is_valid_input(char *str)
+static void	is_valid_input(char *str)
 {
-	char	*number;
 	int		len;
 
 	while (is_space(*str))
@@ -56,16 +41,16 @@ static char	*is_valid_input(char *str)
 	if (*str == '+')
 		str++;
 	else if (*str == '-')
-		erro_exit("Accept only positive values");
-	if (!ft_isdigit(*str))
-		erro_exit("Accept only digits");
-	number = str;
-	len = 0;
-	while (ft_isdigit(*str++))
+		str_exit("Accept only positive values", NULL);
+	while (*str)
+	{
+		if (!ft_isalnum(*str))
+			str_exit("Accept only digits", NULL);
+		str++;
+	}
+	len = 0; 
+	while (str[len])
 		len++;
-	if (len > 10)
-		erro_exit("The value is superior at INT_MAX");
-	return (number);
 }
 
 static long	ft_atol(char *str)
@@ -75,48 +60,35 @@ static long	ft_atol(char *str)
 
 	num = 0;
 	i = 0;
-	str = is_valid_input(str);
+	is_valid_input(str);
 	while (str[i] >= '0' && str[i] <= '9')
 	{
+		if (num > (INT_MAX / 10))
+			str_exit("The value is superior at INT_MAX", NULL);
 		num = (num * 10) + (str[i] - '0');
 		i++;
 	}
-	if (num > (INT_MAX))
-		erro_exit("The value is superior at INT_MAX");
 	return (num);
 }
 
-// ./philo num_of_philo time_to_die time_to_eat time_to_sleep [num_eat]
-// ./philo 5 800 200 200 [5]
-	// 1 ms = milliseconde = 10puissance-3 = 1/1000 = 1000 microsecondes
-	// 1 us	= microseconde = 10puissance-6 = 1/1000000 = 0,001 milliseconde
-	// usleep = microseconde
 void	parse(t_data *data, char **av)
 {
-	// ajouter verification si bien chiffres
 	data->philo_nbr = ft_atol(av[1]);
 	if (data->philo_nbr > 200 || data->philo_nbr <= 0 )
-	{
-		erro_exit("philo number must be less than 200 and more than 0");
-	}
+		str_exit("philo number must be less than 200 and more than 0", NULL); //pourquoi ? verifier
 	data->time_to_die = ft_atol(av[2]);
 	data->time_to_eat = ft_atol(av[3]);
 	data->time_to_sleep = ft_atol(av[4]);
-	if (data->time_to_die < 60
+	if (data->time_to_die < 60 //pourquoi ? verifier
 		|| data->time_to_eat < 60
 			|| data->time_to_sleep < 60)
-			erro_exit("Timestamps must be major than 60ms");
+			str_exit("Timestamps must be major than 60ms", NULL);
 	if (av[5])
 	{
 		data->num_meals = ft_atol(av[5]);
-		if (data->num_meals <= 0)
-			erro_exit("number of meals must be more tan 0");
+		if (data->num_meals <= 0) //pourquoi ? verifier
+			str_exit("number of meals must be more tan 0", NULL);
 	}
 	else
 		data->num_meals = -1;
 }
-
-//./philo 5 450 200 200 -> pb 2 philo mangent en mm temps alors quil ne devraient pas
-// faut-il que ce soit une regle au moment du parsing ou cela signifie que pour vivre il faut que
-// nb impair de philo = time_to_die doit etre 3 fois sup au time_to_eat
-// nb pair de philo = time to die doit etre au moins 2 fois sup au temps time_to_eat

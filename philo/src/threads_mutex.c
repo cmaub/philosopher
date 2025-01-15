@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 16:15:32 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/14 17:22:23 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/15 17:04:03 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,36 +19,34 @@ static void	handle_mutex_error(int status, t_philo_code code, t_mtx *mutex)
 		return ;
 	if (status == EINVAL || (LOCK == code || UNLOCK == code))
 	{
-		// pthread_mutex_destroy(mutex);
-		erro_exit("The value specified by mutex is invalid");
+		pthread_mutex_destroy(mutex);
+		str_exit("The value specified by mutex is invalid", NULL);
 	}
 	else if (status == EINVAL && INIT == code)
-	{
-		// pthread_mutex_destroy(mutex);
-		erro_exit("The value specified by attr is invalid");
-	}
+		str_exit("The value specified by attr is invalid", NULL);
 	else if (status == EDEADLK)
 	{
-		// pthread_mutex_destroy(mutex);
-		erro_exit("A deadlock would occur if the thread blocked waiting for mutex.");
+		pthread_mutex_destroy(mutex);
+		str_exit("A deadlock would occur if the thread blocked waiting for mutex.", NULL);
 	}
 	else if (status == ENOMEM)
 	{
-		// pthread_mutex_destroy(mutex);
-		erro_exit("The process cannot allocate enough memory to create another mutex.");
+		pthread_mutex_destroy(mutex);
+		str_exit("The process cannot allocate enough memory to create another mutex.", NULL);
 	}
 	else if (status == EPERM)
 	{
-		// pthread_mutex_destroy(mutex);
-		erro_exit("The current thread does not hold a lock on mutex.");
+		pthread_mutex_destroy(mutex);
+		str_exit("The current thread does not hold a lock on mutex.", NULL);
 	}
 	else if (status == EBUSY)
 	{
-		// pthread_mutex_destroy(mutex);
-		erro_exit("Mutex is locked");
+		pthread_mutex_destroy(mutex);
+		str_exit("Mutex is locked", NULL);
 	}
 }
 
+//revoir la gestion des erreurs
 void	handle_mutex(t_mtx *mutex, t_philo_code code)
 {
 	if (LOCK == code)
@@ -60,7 +58,7 @@ void	handle_mutex(t_mtx *mutex, t_philo_code code)
 	else if (DESTROY == code)
 		handle_mutex_error(pthread_mutex_destroy(mutex), code, mutex);
 	else
-		erro_exit("Error with the code of mutex");
+		str_exit("Error with the code of mutex", NULL); //
 }
 
 
@@ -78,24 +76,18 @@ int handle_thread_error(int status, t_philo_code code)
 		printf("No thread could be found corresponding to that specified by the given thread ID, thread.\n");
 	if (status == EDEADLK)
 		printf("A deadlock was detected or the value of thread\n");
-	if (status == EINVAL && code == DETACH)
-		printf("The implementation has detected that the value specified by thread does not refer to a joinable thread.\n");
-	if (status == ESRCH && code == DETACH)
-		printf("No thread could be found corresponding to that specified by the given thread ID, thread\n");
 	if (status == 0)
 		return (TRUE);
 	else
 		return (FALSE);	
 }
 
-int	handle_thread(pthread_t *thread, void *(*routine)(void *), void *data, t_philo_code code) //pointeur to fonction
+int	handle_thread(pthread_t *thread, void *(*routine)(void *), void *data, t_philo_code code)
 {
 	if (CREATE == code)
 	 	return (handle_thread_error(pthread_create(thread, NULL, routine, data), code));
 	else if (JOIN == code)
 		return (handle_thread_error(pthread_join(*thread, NULL), code));
-	else if (DETACH == code)
-		return (handle_thread_error(pthread_detach(*thread), code));
 	else
 	{
 		printf("Error with the code of mutex");

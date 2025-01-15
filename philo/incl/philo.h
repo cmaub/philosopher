@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 12:08:08 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/14 17:23:41 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/15 16:54:04 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,23 +32,16 @@
 // ◦ time_to_sleep (in milliseconds): The time a philosopher will spend sleeping.
 // ◦ number_of_times_each_philosopher_must_eat (optional argument): If all philosophers have eaten at least number_of_times_each_philosopher_must_eat times, the simulation stops. If not specified, the simulation stops when a philosopher dies.
 
+
 typedef enum e_philo_code
-{
+{//verifier cmt fonctionne enum
 	LOCK,
 	UNLOCK,
 	INIT,
 	DESTROY,
 	CREATE,
 	JOIN,
-	DETACH,
 }		t_philo_code;
-
-typedef enum e_time
-{
-	SECOND,
-	MILLISECOND,
-	MICROSECOND,
-}	t_time ;
 
 typedef enum e_philo_action
 {
@@ -74,48 +67,43 @@ typedef struct s_philo
 	int			id;
 	pthread_t	thread_id;
 	long		nb_meals_eaten;
-	int 		full; // nb max de repas
+	int 		full; //peut-etre besoin de crer mutex pour full ?
 	long		last_meal_t;
-	t_fork		*second_fork; //t_mtx *second_fork
-	t_fork		*first_fork; // t_mtx *first_fork
-	t_mtx		philo_mutex;
-	t_mtx		last_meal_lock;// pour les races avec le moniteur
+	t_fork		*second_fork;
+	t_fork		*first_fork;
+	t_mtx		meal_lock;
 	t_data		*data;
 }	t_philo ;
 
 typedef struct s_data
 {
-	long	philo_nbr;
-	long	time_to_die;
-	long	time_to_eat;
-	long	time_to_sleep;
-	long	num_meals; // Nombre de repas que chaque philosophe doit manger -> optionnel
-	long	start_time;
-	int		end; // Flag pour indiquer si la simulation est terminée (philo meurt  ou tous sont pleins)
-	t_mtx	end_lock;
-	t_mtx	full_lock;
-	t_mtx	start_lock;
-	t_fork	*forks; // tableau de fourchettes
-	t_philo	*philos; // tableau de philosophes
-	int	threads_readies;
-	// t_mtx	data_mega_lock; // table mutex / pour ev
-	t_mtx	data_lock;
-	t_mtx	data_mega_lock;// table mutex / pour eviter les races quand on lit dans la struct donnee
-	t_mtx	print_lock; // Mutex pour protéger les sorties sur la console
+	long		philo_nbr;
+	long		time_to_die;
+	long		time_to_eat;
+	long		time_to_sleep;
+	long		num_meals;
+	long		start_time;
+	int			end;
+	t_fork		*forks;
+	t_philo		*philos;
+	int			philo_readies;
 	pthread_t	monitor;
-	pthread_t	supervisor; // to do -> check la mort et les repas des philos
-	long		threads_running_nb;
+	long		threads_running_nb;	
+	t_mtx		end_lock;
+	t_mtx		full_lock;
+	t_mtx		data_lock;
+	t_mtx		print_lock;
 } t_data;
 
-void	erro_exit(char *error);
-void	*try_malloc(size_t size);
+void	*try_malloc(size_t size, t_data *data);
+void	str_exit(char *error, t_data *data);
 void	parse(t_data *data, char **av);
-int		handle_thread(pthread_t *thread, void *(*routine)(void *), void *data, t_philo_code code);
 void	handle_mutex(t_mtx *mutex, t_philo_code code);
+int		handle_thread(pthread_t *thread, void *(*routine)(void *), void *data, t_philo_code code);
 void	data_initializer(t_data *data);
 void	philo_initializer(t_data *data);
 void	dinner(t_data *data);
-long	gettime(int unit);
+long	gettime();
 void	ft_usleep(long time_in_ms, t_data *data);
 void	print_status(t_philo_action action, t_philo *philo);
 void	free_destroy_mutex(t_data *data);
@@ -124,10 +112,9 @@ int		all_philos_full(t_data *data);
 void	think(t_philo *philo);
 void	desynchronise_threads(t_philo *philo);
 // monitor
-void	increase_long(t_mtx *mutex, long *value);
+void	increase_thr_running_nb(t_mtx *mutex, long *value);
 void	*monitor_routine(void *data);
 int		threads_running(t_mtx *mutex, long *threads_running, long philo_nbr);
-int		philo_died(t_philo *philo);
 void	synchronise_threads(t_data	*data);
 
 // set values mutex
@@ -138,6 +125,7 @@ void	set_long(t_mtx *mutex, long *dest, long value);
 long	get_long(t_mtx *mutex, long *value);
 void	set_last_meal(t_philo *philo);
 void	set_end_true(t_data *data);
+void	increase_nb_meals(t_philo *philo);
 
 
 void print_data(t_data *data);
