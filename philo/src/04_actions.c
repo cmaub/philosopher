@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 10:26:48 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 10:43:42 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 13:03:28 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	eat(t_philo *philo)
 	if (philo->data->num_meals > 0
 		&& philo->nb_meals_eaten == philo->data->num_meals)		
 			philo->full = TRUE;
-	handle_mutex(&philo->data->full_lock, UNLOCK);	
+	handle_mutex(&philo->data->full_lock, UNLOCK);
 }
 
 void	think(t_philo *philo)

@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:54:53 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 12:55:27 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 13:00:23 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,8 @@ int	create_philos_threads(t_data *data)
 	i = -1;
 	while (++i < data->philo_nbr)
 	{
-		if (!handle_thread(&data->philos[i].id, philo_routine, &data->philos[i], CREATE))
+		if (!handle_thread(&data->philos[i].id,
+				philo_routine, &data->philos[i], CREATE))
 		{
 			while (i > 0)
 				handle_thread(&data->philos[i].id, NULL, NULL, JOIN);
@@ -83,7 +84,8 @@ void	dinner(t_data *data)
 	i = -1;
 	if (data->philo_nbr == 1)
 	{
-		if (!handle_thread(&data->philos[0].id, lonely_philo, &data->philos[0], CREATE))
+		if (!handle_thread(&data->philos[0].id,
+				lonely_philo, &data->philos[0], CREATE))
 			return ;
 	}
 	else

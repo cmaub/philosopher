@@ -6,7 +6,7 @@
 #    By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/07 12:07:39 by cmaubert          #+#    #+#              #
-#    Updated: 2025/01/17 10:45:26 by cmaubert         ###   ########.fr        #
+#    Updated: 2025/01/17 12:58:46 by cmaubert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,11 +14,9 @@ NAME = philo
 
 # Compiler
 # CC		= clang
-
-CC		= cc
 # CFLAGS	= -Wall -Wextra -Werror
+CC		= cc
 CFLAGS	= -Wall -Wextra -Werror -pthread -g -fsanitize=thread
-
 
 # Sources
 SRC_PATH	=	src/
