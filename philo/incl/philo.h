@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 12:08:08 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 11:50:40 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 12:50:22 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ typedef struct s_fork
 
 typedef struct s_philo
 {
-	int			id;
-	t_thrd	thread_id;
+	int			nb;
+	t_thrd		id;
 	long		nb_meals_eaten;
 	int			full; //peut-etre besoin de crer mutex pour full pour chaque philo plutot que dutiliser un mtx dans data ?
 	long		last_meal_t;

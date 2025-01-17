@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:56:33 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 12:01:43 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 12:50:53 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@ static void	assign_fork(t_philo *philo, t_fork *forks, int position)
 	int	philo_nbr;
 
 	philo_nbr = philo->data->philo_nbr;
-	if (philo->id % 2 != 0)
+	if (philo->nb % 2 != 0)
 	{
 		philo->first_fork = &forks[(position + 1) % philo_nbr];
 		philo->second_fork = &forks[position];
 	}
-	if (philo->id % 2 == 0)
+	if (philo->nb % 2 == 0)
 	{
 		philo->first_fork = &forks[position];
 		philo->second_fork = &forks[(position + 1) % philo_nbr];
@@ -36,7 +36,7 @@ static int	philo_initializer(t_data *data)
 	i = -1;
 	while (++i < data->philo_nbr)
 	{
-		data->philos[i].id = i + 1;
+		data->philos[i].nb = i + 1;
 		data->philos[i].full = FALSE;
 		data->philos[i].nb_meals_eaten = 0;
 		data->philos[i].last_meal_t = gettime();
@@ -56,7 +56,6 @@ static int	philo_initializer(t_data *data)
 		assign_fork(&data->philos[i], data->forks, i);
 	}
 	return (TRUE);
-
 }
 
 static int	init_forks(t_data *data)
@@ -81,6 +80,31 @@ static int	init_forks(t_data *data)
 	return (TRUE);
 }
 
+int	init_data_mtx(t_data *data)
+{
+	if (!handle_mutex(&data->data_lock, INIT))
+		return (FALSE);
+	if (!handle_mutex(&data->end_lock, INIT))
+	{
+		handle_mutex(&data->data_lock, DESTROY);
+		return (FALSE);
+	}
+	if (!handle_mutex(&data->full_lock, INIT))
+	{
+		handle_mutex(&data->data_lock, DESTROY);
+		handle_mutex(&data->end_lock, DESTROY);
+		return (FALSE);
+	}
+	if (!handle_mutex(&data->print_lock, INIT))
+	{
+		handle_mutex(&data->data_lock, DESTROY);
+		handle_mutex(&data->end_lock, DESTROY);
+		handle_mutex(&data->full_lock, DESTROY);
+		return (FALSE);
+	}
+	return (TRUE);
+}
+
 int	data_initializer(t_data *data)
 {
 	data->end = FALSE;
@@ -92,16 +116,9 @@ int	data_initializer(t_data *data)
 	data->forks = try_malloc(sizeof(t_fork) * data->philo_nbr);
 	if (!data->forks)
 		return (free(data->philos), FALSE);
-	data->start_time  = gettime();
-	if (!handle_mutex(&data->data_lock, INIT))
+	data->start_time = gettime();
+	if (!init_data_mtx(data))
 		return (FALSE);
-	if (!handle_mutex(&data->end_lock, INIT))
-		return (handle_mutex(&data->data_lock, DESTROY), FALSE);
-	if (!handle_mutex(&data->full_lock, INIT))
-		return (handle_mutex(&data->data_lock, DESTROY), handle_mutex(&data->end_lock, DESTROY), FALSE);
-	if (!handle_mutex(&data->print_lock, INIT))
-		return (handle_mutex(&data->data_lock, DESTROY),
-		handle_mutex(&data->end_lock, DESTROY), handle_mutex(&data->full_lock, DESTROY), FALSE);
 	if (!init_forks(data))
 		return (FALSE);
 	if (!philo_initializer(data))

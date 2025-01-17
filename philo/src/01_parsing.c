@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 16:40:34 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 12:01:57 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 12:47:02 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,17 +74,17 @@ int	parse(t_data *data, char **av)
 		return (printf("Error with the parsing of the data\n"), FALSE);
 	data->philo_nbr = ft_atol(av[1]);
 	if (data->philo_nbr > 200 || data->philo_nbr <= 0)
-	{
-		printf("philo number must be less than 200 and more than 0\n");
-		return (FALSE);
-	}
+		return (printf("philo number must be less than 200 and more than 0\n"),
+			FALSE);
 	data->time_to_die = ft_atol(av[2]);
 	data->time_to_eat = ft_atol(av[3]);
 	data->time_to_sleep = ft_atol(av[4]);
-	if (data->time_to_die < 60
-		|| data->time_to_eat < 60
-			|| data->time_to_sleep < 60)
-			return (printf("The value is superior at INT_MAX and major than 60ms\n"), FALSE);
+	if (data->time_to_die < 60 || data->time_to_eat < 60
+		|| data->time_to_sleep < 60)
+	{
+		printf("The value is superior at INT_MAX and major than 60ms\n");
+		return (FALSE);
+	}
 	if (av[5])
 	{
 		data->num_meals = ft_atol(av[5]);
