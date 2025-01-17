@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 12:08:08 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 12:50:22 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 15:57:44 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 # include <errno.h>
 
 typedef pthread_mutex_t	t_mtx;
-typedef pthread_t t_thrd;
+typedef pthread_t		t_thrd;
 typedef struct s_data	t_data;
 
 typedef enum e_code
@@ -80,7 +80,7 @@ typedef struct s_data
 	t_fork		*forks;
 	t_philo		*philos;
 	int			philo_readies;
-	t_thrd	monitor;
+	t_thrd		monitor;
 	long		threads_running_nb;
 	t_mtx		end_lock;
 	t_mtx		full_lock;
@@ -104,9 +104,9 @@ void	eat(t_philo *philo);
 int		all_philos_full(t_data *data);
 int		dinner_end(t_data *data);
 void	*monitor_routine(void *data);
-// CREATE THREADS 
+// CREATE THREADS
 int		handle_mutex(t_mtx *mutex, t_code code);
-int		handle_thread(t_thrd *thrd, void *(*f)(void *), void *data, t_code code);
+int		handle_thread(t_thrd *thrd, void *(*f)(void *), void *data, t_code c);
 // HANDLE VALUES WITH MTX
 int		get_bool(t_mtx *mutex, int *value);
 void	set_bool(t_mtx *mutex, int *dest, int value);
@@ -127,4 +127,3 @@ void	free_destroy_mutex(t_data *data);
 void	*try_malloc(size_t size);
 
 #endif
-	

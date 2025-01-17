@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   05_monitor.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/09 10:38:14 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 12:31:45 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 16:02:22 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 int	dinner_end(t_data *data)
-{		
+{
 	handle_mutex(&data->end_lock, LOCK);
 	if (data->end == TRUE)
 		return (handle_mutex(&data->end_lock, UNLOCK), TRUE);
@@ -21,7 +21,7 @@ int	dinner_end(t_data *data)
 	return (FALSE);
 }
 
-int		philo_died(t_philo *philo)
+int	philo_died(t_philo *philo)
 {
 	long	elapsed;
 
@@ -46,7 +46,7 @@ int	is_full(t_philo *philo)
 
 int	all_philos_full(t_data *data)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	handle_mutex(&data->full_lock, LOCK);
@@ -70,29 +70,25 @@ int	all_philos_full(t_data *data)
 
 void	*monitor_routine(void *arg)
 {
-	int i;
-	t_data *data = (t_data *)arg;
+	int		i;
+	t_data	*data;
 
+	data = (t_data *)arg;
 	while (dinner_end(data) == FALSE)
 	{
 		i = -1;
-		while (++i < data->philo_nbr) // revoir peut-etre la condition
+		while (++i < data->philo_nbr)
 		{
 			if (philo_died(&data->philos[i]))
 			{
-				handle_mutex(&data->end_lock, LOCK);
-				data->end = TRUE ;
-				handle_mutex(&data->end_lock, UNLOCK);
+				set_bool(&data->end_lock, &data->end, TRUE);
 				print_status(DIED, &data->philos[i]);
-				break;
+				break ;
 			}
 			if (all_philos_full(data))
 			{
-				handle_mutex(&data->end_lock, LOCK);
-				data->end = TRUE;
-				// printf("*** Philosophes rassasies !\n"); // imprimer ? lock avec le print mtx
-				handle_mutex(&data->end_lock, UNLOCK);
-				break;
+				set_bool(&data->end_lock, &data->end, TRUE);
+				break ;
 			}
 		}
 		usleep(10);

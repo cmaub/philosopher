@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 16:30:40 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 10:01:05 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 15:45:40 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,24 +23,23 @@
 // sortie de gettimeofday convertie en milliseconde
 // int gettimeofday(struct timeval *restrict tp, void *restrict tzp);
 
-// struct timeval 
+// struct timeval
 // {
 //     time_t      tv_sec;     /* seconds */
 //     suseconds_t tv_usec;    /* microseconds */
 // };
 
-long gettime()
+long	gettime(void)
 {
-	struct timeval tv;
+	struct timeval	tv;
 
 	if (gettimeofday(&tv, NULL))
-		printf("gettimeofday failed\n"); //checker le return ?
-	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+		printf("gettimeofday failed\n");
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
 void	ft_usleep(long time_in_ms, t_data *data)
 {
-	(void)data;
 	long	start_time;
 	long	elapsed;
 	long	remaining;
@@ -50,21 +49,20 @@ void	ft_usleep(long time_in_ms, t_data *data)
 		return ;
 	while (gettime() - start_time < time_in_ms)
 	{
-		// if (dinners_end(data))
-		// 	break ;
 		elapsed = gettime() - start_time;
 		remaining = time_in_ms - elapsed;
-		// pour optimiser alterner entre methode si temps restant est petit ou grand
-		// Si le temps restant est supérieur à 1 milliseconde utiliser usleep
-		// pour mettre en pause le programme pendant la moitié du temps
-		// restant pour reduire la consommation de ressources
 		if (remaining > 1)
 			usleep(remaining * 1000 / 2);
 		else
 		{
-			//SPINLOCK : occuper activement le programme jusqu'a ce qu'une condition soit remplie
 			while (gettime() - start_time < time_in_ms)
 				;
 		}
 	}
 }
+
+// pour optimiser alterner entre methode si temps restant est petit ou grand
+// Si le temps restant est supérieur à 1 milliseconde utiliser usleep
+// pour mettre en pause le programme pendant la moitié du temps
+// restant pour reduire la consommation de ressources
+//SPINLOCK : occuper activement le progr jusqu'a ce qu'une cdt soit remplie

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   synchro.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 10:24:24 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 11:50:40 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 15:56:35 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	incr_thr_run_nb(t_mtx *mutex, long *value)
 {
 	handle_mutex(mutex, LOCK);
-	(*value) = (*value)+ 1;
+	(*value) = (*value) + 1;
 	handle_mutex(mutex, UNLOCK);
 }
 

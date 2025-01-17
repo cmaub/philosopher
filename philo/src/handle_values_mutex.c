@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_values_mutex.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:24:02 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 10:31:47 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 15:40:41 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	set_bool(t_mtx *mutex, int *dest, int value)
 
 int	get_bool(t_mtx *mutex, int *value)
 {
-	int result;
+	int	result;
 
 	handle_mutex(mutex, LOCK);
 	result = *value;
@@ -45,11 +45,10 @@ void	set_last_meal(t_philo *philo)
 
 long	get_long(t_mtx *mutex, long *value)
 {
-	long result;
+	long	result;
 
 	handle_mutex(mutex, LOCK);
 	result = *value;
 	handle_mutex(mutex, UNLOCK);
 	return (result);
 }
-

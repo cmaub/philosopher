@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   03_dinner.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:54:53 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 13:00:23 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 16:17:39 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,13 @@ void	dinner(t_data *data)
 	i = -1;
 	if (data->philo_nbr == 1)
 	{
-		if (!handle_thread(&data->philos[0].id,
-				lonely_philo, &data->philos[0], CREATE))
+		if (!handle_thread(&data->philos[0].id, lonely_philo, &data->philos[0], CREATE))
 			return ;
+		if (!handle_thread(&data->monitor, monitor_routine, data, CREATE))
+		{
+			handle_thread(&data->philos[0].id, NULL, NULL, JOIN);
+			return ;
+		}
 	}
 	else
 	{

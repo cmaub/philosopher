@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   04_actions.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 10:26:48 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 13:03:28 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 15:56:21 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	took_forks(t_philo *philo)
 void	eat(t_philo *philo)
 {
 	if (((!all_philos_full(philo->data) && philo->data->num_meals > 0)
-		|| philo->data->num_meals == -1)
+			|| philo->data->num_meals == -1)
 		&& !dinner_end(philo->data))
 	{
 		took_forks(philo);
@@ -41,8 +41,8 @@ void	eat(t_philo *philo)
 	}
 	handle_mutex(&philo->data->full_lock, LOCK);
 	if (philo->data->num_meals > 0
-		&& philo->nb_meals_eaten == philo->data->num_meals)		
-			philo->full = TRUE;
+		&& philo->nb_meals_eaten == philo->data->num_meals)
+		philo->full = TRUE;
 	handle_mutex(&philo->data->full_lock, UNLOCK);
 }
 
