@@ -1,25 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   monitor.c                                          :+:      :+:    :+:   */
+/*   05_monitor.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/09 10:38:14 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/15 17:18:03 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 12:31:45 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	threads_running(t_mtx *mutex, long *threads_running_nbr, long philo_nbr)
-{
-	handle_mutex(mutex, LOCK);
-	if (*threads_running_nbr == philo_nbr)
-		return (TRUE);
-	handle_mutex(mutex, UNLOCK);
-	return (FALSE);
-}
 
 int	dinner_end(t_data *data)
 {		
@@ -52,7 +43,31 @@ int	is_full(t_philo *philo)
 	handle_mutex(&philo->data->full_lock, UNLOCK);
 	return (FALSE);
 }
-	
+
+int	all_philos_full(t_data *data)
+{
+	int i;
+
+	i = 0;
+	handle_mutex(&data->full_lock, LOCK);
+	while (i < data->philo_nbr)
+	{
+		if (data->philos[i].full == FALSE)
+		{
+			handle_mutex(&data->full_lock, UNLOCK);
+			return (FALSE);
+		}
+		i++;
+	}
+	if (i == data->philo_nbr)
+	{
+		handle_mutex(&data->full_lock, UNLOCK);
+		return (TRUE);
+	}
+	handle_mutex(&data->full_lock, UNLOCK);
+	return (FALSE);
+}
+
 void	*monitor_routine(void *arg)
 {
 	int i;
@@ -61,7 +76,7 @@ void	*monitor_routine(void *arg)
 	while (dinner_end(data) == FALSE)
 	{
 		i = -1;
-		while (++i < data->philo_nbr && !dinner_end(data) && all_philos_full(data)) // revoir peut-etre la condition
+		while (++i < data->philo_nbr) // revoir peut-etre la condition
 		{
 			if (philo_died(&data->philos[i]))
 			{

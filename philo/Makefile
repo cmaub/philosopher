@@ -6,7 +6,7 @@
 #    By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/07 12:07:39 by cmaubert          #+#    #+#              #
-#    Updated: 2025/01/15 16:40:45 by cmaubert         ###   ########.fr        #
+#    Updated: 2025/01/17 10:45:26 by cmaubert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,15 +22,17 @@ CFLAGS	= -Wall -Wextra -Werror -pthread -g -fsanitize=thread
 
 # Sources
 SRC_PATH	=	src/
-SRC_FILES	= main.c \
-				utils.c \
-				parsing.c \
-				init.c \
-				dinner.c \
+SRC_FILES	= 00_main.c \
+				01_parsing.c \
+				02_init.c \
+				03_dinner.c \
+				04_actions.c \
+				05_monitor.c \
 				handle_values_mutex.c \
-				threads_mutex.c \
-				write.c \
-				monitor.c \
+				create_threads_mutex.c \
+				print.c \
+				utils.c \
+				synchro.c \
 				time.c
 SRCS	= $(addprefix $(SRC_PATH), $(SRC_FILES))
 

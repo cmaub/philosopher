@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing.c                                          :+:      :+:    :+:   */
+/*   01_parsing.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 16:40:34 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/15 17:11:18 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/17 12:01:57 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int	ft_isalnum(int c)
 		return (FALSE);
 }
 
-static void	is_valid_input(char *str)
+int	is_valid_input(char *str)
 {
 	int		len;
 
@@ -41,54 +41,57 @@ static void	is_valid_input(char *str)
 	if (*str == '+')
 		str++;
 	else if (*str == '-')
-		str_exit("Accept only positive values", NULL);
+		return (FALSE);
 	while (*str)
 	{
 		if (!ft_isalnum(*str))
-			str_exit("Accept only digits", NULL);
+			return (FALSE);
 		str++;
 	}
-	len = 0; 
+	len = 0;
 	while (str[len])
 		len++;
+	return (TRUE);
 }
 
-static long	ft_atol(char *str)
+int	check_all_av(char **av)
 {
-	long	num;
-	int		i;
+	int	i;
 
-	num = 0;
-	i = 0;
-	is_valid_input(str);
-	while (str[i] >= '0' && str[i] <= '9')
+	i = 1;
+	while (av[i])
 	{
-		if (num > (INT_MAX / 10))
-			str_exit("The value is superior at INT_MAX", NULL);
-		num = (num * 10) + (str[i] - '0');
+		if (!is_valid_input(av[i]))
+			return (FALSE);
 		i++;
 	}
-	return (num);
+	return (TRUE);
 }
 
-void	parse(t_data *data, char **av)
+int	parse(t_data *data, char **av)
 {
+	if (!check_all_av(av))
+		return (printf("Error with the parsing of the data\n"), FALSE);
 	data->philo_nbr = ft_atol(av[1]);
-	if (data->philo_nbr > 200 || data->philo_nbr <= 0 )
-		str_exit("philo number must be less than 200 and more than 0", NULL); //pourquoi ? verifier
+	if (data->philo_nbr > 200 || data->philo_nbr <= 0)
+	{
+		printf("philo number must be less than 200 and more than 0\n");
+		return (FALSE);
+	}
 	data->time_to_die = ft_atol(av[2]);
 	data->time_to_eat = ft_atol(av[3]);
 	data->time_to_sleep = ft_atol(av[4]);
-	if (data->time_to_die < 60 //pourquoi ? verifier
+	if (data->time_to_die < 60
 		|| data->time_to_eat < 60
 			|| data->time_to_sleep < 60)
-			str_exit("Timestamps must be major than 60ms", NULL);
+			return (printf("The value is superior at INT_MAX and major than 60ms\n"), FALSE);
 	if (av[5])
 	{
 		data->num_meals = ft_atol(av[5]);
-		if (data->num_meals <= 0) //pourquoi ? verifier
-			str_exit("number of meals must be more tan 0", NULL);
+		if (data->num_meals <= 0)
+			return (printf("number of meals must be more than 0\n"), FALSE);
 	}
 	else
 		data->num_meals = -1;
+	return (TRUE);
 }
