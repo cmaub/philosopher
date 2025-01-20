@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   05_monitor.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/09 10:38:14 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 16:02:22 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/20 17:33:08 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,17 +32,17 @@ int	philo_died(t_philo *philo)
 		return (FALSE);
 }
 
-int	is_full(t_philo *philo)
-{
-	handle_mutex(&philo->data->full_lock, LOCK);
-	if (philo->full == TRUE)
-	{
-		handle_mutex(&philo->data->full_lock, UNLOCK);
-		return (TRUE);
-	}
-	handle_mutex(&philo->data->full_lock, UNLOCK);
-	return (FALSE);
-}
+// int	is_full(t_philo *philo)
+// {
+// 	handle_mutex(&philo->data->full_lock, LOCK);
+// 	if (philo->full == TRUE)
+// 	{
+// 		handle_mutex(&philo->data->full_lock, UNLOCK);
+// 		return (TRUE);
+// 	}
+// 	handle_mutex(&philo->data->full_lock, UNLOCK);
+// 	return (FALSE);
+// }
 
 int	all_philos_full(t_data *data)
 {
@@ -74,6 +74,8 @@ void	*monitor_routine(void *arg)
 	t_data	*data;
 
 	data = (t_data *)arg;
+	// while (!threads_running(&data->data_lock, &data->threads_running_nb, data->philo_nbr))
+	// 	;
 	while (dinner_end(data) == FALSE)
 	{
 		i = -1;

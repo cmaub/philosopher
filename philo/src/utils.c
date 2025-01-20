@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 16:34:03 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 15:46:00 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/20 17:50:11 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void	free_destroy_mutex(t_data *data)
 	handle_mutex(&data->print_lock, DESTROY);
 	handle_mutex(&data->end_lock, DESTROY);
 	handle_mutex(&data->full_lock, DESTROY);
+	handle_mutex(&data->time_lock, DESTROY);
 	free(data->philos);
 	free(data->forks);
 }
@@ -62,10 +63,12 @@ long	ft_atol(char *str)
 	i = 0;
 	while (str[i] >= '0' && str[i] <= '9')
 	{
-		if (num > (INT_MAX / 10))
+		if (num > INT_MAX)
 			return (-1);
 		num = (num * 10) + (str[i] - '0');
 		i++;
 	}
+	if (num > INT_MAX)
+			return (-1);
 	return (num);
 }

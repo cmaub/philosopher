@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_values_mutex.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 15:24:02 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 15:40:41 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/20 14:33:36 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 void	increase_nb_meals(t_philo *philo)
 {
+	if (dinner_end(philo->data))
+		return ;
 	handle_mutex(&philo->meal_lock, LOCK);
 	philo->nb_meals_eaten = philo->nb_meals_eaten + 1;
 	handle_mutex(&philo->meal_lock, UNLOCK);

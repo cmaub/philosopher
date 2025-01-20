@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   03_dinner.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:54:53 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 16:17:39 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/20 17:50:11 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,10 @@ int	threads_running(t_mtx *mutex, long *threads_running_nbr, long philo_nbr)
 {
 	handle_mutex(mutex, LOCK);
 	if (*threads_running_nbr == philo_nbr)
+	{
+		handle_mutex(mutex, UNLOCK);
 		return (TRUE);
+	}
 	handle_mutex(mutex, UNLOCK);
 	return (FALSE);
 }
@@ -33,8 +36,10 @@ void	*philo_routine(void *data)
 		ft_usleep(philo->data->time_to_eat / 2, philo->data);
 	while (!dinner_end(philo->data) && !all_philos_full(philo->data))
 	{
+		// handle_mutex(&philo->data->time_lock, LOCK);
 		eat(philo);
 		ft_sleep(philo);
+		// printf("after sleep philo nb = ** %d, philo full = %d\n", philo->nb, all_philos_full(philo->data));
 		think(philo);
 	}
 	return (NULL);
@@ -97,7 +102,9 @@ void	dinner(t_data *data)
 		if (!create_philos_threads(data))
 			return ;
 	}
+	handle_mutex(&data->time_lock, LOCK);
 	data->start_time = gettime();
+	handle_mutex(&data->time_lock, UNLOCK);
 	set_bool(&data->data_lock, &data->philo_readies, TRUE);
 	handle_thread(&data->monitor, NULL, NULL, JOIN);
 	i = -1;

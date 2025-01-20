@@ -6,7 +6,7 @@
 /*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:56:33 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 12:50:53 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/20 17:50:11 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,14 @@ int	init_data_mtx(t_data *data)
 		handle_mutex(&data->full_lock, DESTROY);
 		return (FALSE);
 	}
+	if (!handle_mutex(&data->time_lock, INIT))
+	{
+		handle_mutex(&data->data_lock, DESTROY);
+		handle_mutex(&data->end_lock, DESTROY);
+		handle_mutex(&data->full_lock, DESTROY);
+		handle_mutex(&data->time_lock, DESTROY);
+		return (FALSE);
+	}
 	return (TRUE);
 }
 
@@ -110,6 +118,7 @@ int	data_initializer(t_data *data)
 	data->end = FALSE;
 	data->philo_readies = FALSE;
 	data->threads_running_nb = 0;
+	data->nb_full = 0;
 	data->philos = try_malloc(sizeof(t_philo) * data->philo_nbr);
 	if (!data->philos)
 		return (FALSE);

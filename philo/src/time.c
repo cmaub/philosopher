@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 16:30:40 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 15:45:40 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/20 17:36:36 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,29 +40,18 @@ long	gettime(void)
 
 void	ft_usleep(long time_in_ms, t_data *data)
 {
-	long	start_time;
-	long	elapsed;
-	long	remaining;
+	long	start;
 
-	start_time = gettime();
-	if (dinner_end(data) == TRUE)
+	start = gettime();
+	if (((gettime() - start) > data->time_to_die))
 		return ;
-	while (gettime() - start_time < time_in_ms)
+	if ((gettime() - start) > data->time_to_die)
+		return ;
+	while (gettime() - start < time_in_ms)
 	{
-		elapsed = gettime() - start_time;
-		remaining = time_in_ms - elapsed;
-		if (remaining > 1)
-			usleep(remaining * 1000 / 2);
-		else
-		{
-			while (gettime() - start_time < time_in_ms)
-				;
-		}
+		if ((gettime() - start) > data->time_to_die)
+			return ;
+		usleep(50);
 	}
 }
 
-// pour optimiser alterner entre methode si temps restant est petit ou grand
-// Si le temps restant est supérieur à 1 milliseconde utiliser usleep
-// pour mettre en pause le programme pendant la moitié du temps
-// restant pour reduire la consommation de ressources
-//SPINLOCK : occuper activement le progr jusqu'a ce qu'une cdt soit remplie

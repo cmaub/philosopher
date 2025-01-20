@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 12:08:08 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 15:57:44 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/20 17:50:05 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,12 @@ typedef struct s_data
 	t_mtx		full_lock;
 	t_mtx		data_lock;
 	t_mtx		print_lock;
+	t_mtx		time_lock;
+	long		nb_full;
 }		t_data;
+
+
+void	ft_usleep2(long time_in_ms, t_data *data);
 
 long	ft_atol(char *str);
 // PARSE

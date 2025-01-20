@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   00_main.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cmaubert <maubert.cassandre@gmail.com>     +#+  +:+       +#+        */
+/*   By: cmaubert <cmaubert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 14:44:39 by cmaubert          #+#    #+#             */
-/*   Updated: 2025/01/17 16:25:23 by cmaubert         ###   ########.fr       */
+/*   Updated: 2025/01/20 17:39:07 by cmaubert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 // nb impair de philo = time_to_die au moin 3 fois sup au time_to_eat
 // nb pair de philo = time to die au moins 2 fois sup au temps time_to_eat
 // ./philo 4 500 200 2147483647 -> pb
+// ./philo 10 310 150 100 10 -> pb - des fois mort des fois pas
+// pb ordre des messages
+// valgrind --tool=helgrind ./philo 155 610 200 200 5
 
 int	main(int ac, char **av)
 {
